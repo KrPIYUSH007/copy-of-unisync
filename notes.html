@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UniSync — Notes Sharing</title>
+<style>
+:root {
+  --bg:#f7fafc;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent1:#4f46e5;
+  --accent2:#06b6d4;
+  --glass: rgba(255,255,255,0.75);
+  --radius:18px;
+  --shadow: 0 6px 20px rgba(16,24,40,0.08);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+* { box-sizing:border-box }
+html,body { height:100%;margin:0;background:linear-gradient(135deg,#eef2ff 0%, #fdf2f8 100%);color:#0f172a; }
+.header {
+  background:#fff;border-bottom:1px solid rgba(15,23,42,0.04);position:sticky;top:0;z-index:60;
+  box-shadow:0 1px 0 rgba(15,23,42,0.02);
+}
+.container { max-width:1100px;margin:0 auto;padding:20px; }
+.header-inner { display:flex;align-items:center;justify-content:space-between;height:64px; }
+.brand { display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;color:inherit; }
+.logo {
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+  background:linear-gradient(90deg,#2563eb,#7c3aed);
+}
+.brand-title {
+  font-size:20px;font-weight:800;
+  background:linear-gradient(90deg,#2563eb,#7c3aed);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.search { flex:0 0 420px; }
+.search input { width:100%;padding:10px 14px;border-radius:999px;border:1px solid rgba(15,23,42,0.08);outline:none }
+.header-right { display:flex;align-items:center;gap:14px }
+.avatar { width:36px;height:36px;border-radius:999px;background:#f1f5f9;display:flex;align-items:center;justify-content:center }
+
+.layout { display:grid;grid-template-columns:260px 1fr;gap:24px;max-width:1100px;margin:18px auto;padding:0 20px 80px }
+.sidebar { background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow);position:sticky;top:88px;height:fit-content }
+.nav-button {
+  display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:none;background:transparent;width:100%;
+  text-align:left;cursor:pointer;font-weight:600;color:#0f172a;text-decoration:none;
+}
+.nav-button:hover { background:linear-gradient(90deg,#f8fafc,#f6f5ff) }
+.nav-button.active { background:linear-gradient(90deg,rgba(79,70,229,0.08),rgba(124,58,237,0.06)); }
+.quick-actions { display:flex;gap:8px;margin-top:12px }
+.btn { padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600 }
+.btn.primary { background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff }
+.btn.ghost { border:1px solid rgba(15,23,42,0.06);background:transparent }
+
+.content { min-height:60vh }
+.card { background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow); }
+
+.grid-3 { display:grid;grid-template-columns:repeat(3,1fr);gap:16px }
+.grid-2 { display:grid;grid-template-columns:repeat(2,1fr);gap:16px }
+
+.small { font-size:13px;color:var(--muted) }
+.note-item { display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;border:1px solid rgba(15,23,42,0.03) }
+.note-meta { font-size:13px;color:var(--muted) }
+.footer-note { text-align:center;color:var(--muted);margin-top:18px;font-size:13px }
+
+.topbar-actions { display:flex;gap:8px;align-items:center }
+
+/* responsive */
+@media (max-width:900px) {
+  .layout { grid-template-columns:1fr; padding:0 12px; }
+  .search { display:none }
+  .grid-3 { grid-template-columns:1fr }
+  .grid-2 { grid-template-columns:1fr }
+  .sidebar { position:relative;top:auto }
+}
+</style>
+</head>
+<body>
+  <header class="header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <div class="logo">U</div>
+        <div class="brand-title">UniSync</div>
+      </a>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="search"><input placeholder="Search notes by course or title..." /></div>
+        <div class="header-right">
+          <div title="Notifications" style="font-size:20px">🔔</div>
+          <div class="avatar">👤</div>
+          <div style="font-size:14px;color:var(--muted)">Piyush</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout" role="main">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Explore</div>
+      <nav>
+        <a class="nav-button" href="index.html">🏠 Home</a>
+        <a class="nav-button active" href="notes.html">📝 Notes Sharing</a>
+        <a class="nav-button" href="marketplace.html">🛒 Marketplace</a>
+        <a class="nav-button" href="events.html">📅 Events</a>
+        <a class="nav-button" href="groups.html">👥 Study Groups</a>
+        <a class="nav-button" href="forum.html">💬 Q&amp;A Forum</a>
+        <a class="nav-button" href="messages.html">💌 Messages</a>
+        <a class="nav-button" href="dashboard.html">📊 Dashboard</a>
+      </nav>
+
+      <div style="margin-top:14px;border-top:1px solid rgba(15,23,42,0.04);padding-top:12px">
+        <div style="font-size:11px;color:var(--muted)">Quick actions</div>
+        <div class="quick-actions">
+          <button class="btn primary" onclick="document.getElementById('upload').scrollIntoView()">Create</button>
+          <button class="btn ghost" onclick="alert('Invite link copied!')">Invite</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div>
+          <h2 style="margin:0;font-size:24px">Notes Sharing</h2>
+          <div class="small">Upload, download, and rate notes shared by classmates.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn primary" onclick="document.getElementById('upload').scrollIntoView()">Upload Notes</button>
+          <a class="btn ghost" href="index.html" title="Back to Home">Back to Home</a>
+        </div>
+      </div>
+
+      <div class="card" id="upload" style="margin-bottom:14px">
+        <h3 style="margin:0 0 8px 0">Upload Notes</h3>
+        <div class="small" style="margin-bottom:8px">Choose a file and add details for sharing.</div>
+        <form id="uploadForm" onsubmit="event.preventDefault(); createNote();">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input id="noteTitle" required placeholder="Title" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+            <input id="noteCourse" required placeholder="Course (e.g., DSA)" style="width:200px;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+            <input id="noteFile" type="file" style="padding:6px" />
+            <button class="btn primary" type="submit">Upload</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">All Notes</h3>
+        <div class="small" style="margin-bottom:10px">Browse and download shared notes.</div>
+        <div style="overflow:auto">
+          <table style="width:100%;border-collapse:collapse">
+            <thead style="text-align:left;font-size:13px;color:var(--muted)">
+              <tr>
+                <th style="padding:10px 8px">Title</th>
+                <th style="padding:10px 8px">Course</th>
+                <th style="padding:10px 8px">Uploaded By</th>
+                <th style="padding:10px 8px">Size</th>
+                <th style="padding:10px 8px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="notesTableBody">
+              <!-- Dynamic rows go here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_BASE_URL = "http://localhost:5000/api/notes";
+
+    async function createNote() {
+      const title = document.getElementById("noteTitle").value;
+      const course = document.getElementById("noteCourse").value;
+      const fileInput = document.getElementById("noteFile");
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", course); // maps to Note model’s content/course field
+      if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
+
+      try {
+        const res = await fetch(API_BASE_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Upload failed");
+
+        alert("Note uploaded successfully!");
+        document.getElementById("uploadForm").reset();
+        loadNotes();
+      } catch (err) {
+        console.error(err);
+        alert("Error uploading note.");
+      }
+    }
+
+    async function loadNotes() {
+      try {
+        const res = await fetch(API_BASE_URL);
+        const notes = await res.json();
+
+        const tbody = document.getElementById("notesTableBody");
+        tbody.innerHTML = "";
+
+        notes.forEach((note) => {
+          const size = note.filePath ? (Math.random() * 2 + 0.3).toFixed(2) + " MB" : "—";
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td style="padding:10px 8px">${note.title}</td>
+            <td style="padding:10px 8px">${note.content || "—"}</td>
+            <td style="padding:10px 8px">${note.uploader || "Anonymous"}</td>
+            <td style="padding:10px 8px">${size}</td>
+            <td style="padding:10px 8px">
+              ${note.filePath ? `<a href="http://localhost:5000/${note.filePath}" class="btn primary" target="_blank">Download</a>` : ""}
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Error loading notes:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadNotes);
+  </script>
+</body>
+</html>
