@@ -1,76 +1,41 @@
-const API_BASE_URL = "http://localhost:5000/api";
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+const Note = require('../models/Note');
 
-// =================== CREATE NOTE ===================
-async function createNote() {
-  const title = document.getElementById("noteTitle").value;
-  const content = document.getElementById("noteContent").value;
-  const fileInput = document.getElementById("noteFile");
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("content", content);
-  if (fileInput.files[0]) formData.append("file", fileInput.files[0]);
+// Set up storage
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'unisync_notes',
+    allowed_formats: ['pdf', 'docx', 'jpg', 'png', 'txt'],
+  },
+});
 
+const upload = multer({ storage });
+
+// Create a new note
+router.post('/', upload.single('file'), async (req, res) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/notes`, {
-      method: "POST",
-      body: formData,
+    const newNote = new Note({
+      title: req.body.title,
+      content: req.body.content,
+      filePath: req.file.path, // Cloudinary gives a URL here
     });
-
-    if (res.ok) {
-      alert("Note uploaded successfully!");
-      loadNotes(); // refresh notes after upload
-    } else {
-      alert("Failed to upload note");
-    }
+    const savedNote = await newNote.save();
+    res.status(201).json(savedNote);
   } catch (error) {
-    console.error("Error uploading note:", error);
+    res.status(500).json({ message: error.message });
   }
-}
+});
 
-// =================== LOAD ALL NOTES ===================
-async function loadNotes() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/notes`);
-    const notes = await res.json();
-
-    const container = document.getElementById("notesContainer");
-    container.innerHTML = "";
-
-    notes.forEach((note) => {
-      const div = document.createElement("div");
-      div.classList.add("note-card");
-      div.innerHTML = `
-        <h3>${note.title}</h3>
-        <p>${note.content}</p>
-        ${
-          note.filePath
-            ? `<a href="http://localhost:5000/${note.filePath}" target="_blank">View File</a>`
-            : ""
-        }
-        <button onclick="deleteNote('${note._id}')">Delete</button>
-      `;
-      container.appendChild(div);
-    });
-  } catch (error) {
-    console.error("Error loading notes:", error);
-  }
-}
-
-// =================== DELETE NOTE ===================
-async function deleteNote(id) {
-  try {
-    const res = await fetch(`${API_BASE_URL}/notes/${id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      alert("Note deleted!");
-      loadNotes();
-    }
-  } catch (error) {
-    console.error("Error deleting note:", error);
-  }
-}
-
-// Automatically load notes when page loads
-document.addEventListener("DOMContentLoaded", loadNotes);
+module.exports = router;
