@@ -75,27 +75,47 @@ background:linear-gradient(90deg,#2563eb,#7c3aed);}
 <div style="font-size:13px;color:#6b7280">Buy and sell items within your campus community.</div></div>
 </div>
 
-<div class="grid-3">
-<div class="card"><div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>
-<div style="margin-top:10px;font-weight:700">Used TI-84 Calculator</div>
-<div style="font-size:13px;color:#6b7280">Karan • BMS CSE</div>
-<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-<div style="font-weight:700">₹1,500</div><button class="btn ghost">Message</button>
-</div></div>
+<!-- Search and Filter Section -->
+<div class="card" style="margin-bottom:20px">
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <input type="text" id="searchInput" placeholder="Search items..." style="flex:1;min-width:200px;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+    <select id="categoryFilter" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="all">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="books">Books</option>
+      <option value="furniture">Furniture</option>
+      <option value="clothing">Clothing</option>
+      <option value="sports">Sports</option>
+      <option value="calculators">Calculators</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="conditionFilter" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="all">All Conditions</option>
+      <option value="new">New</option>
+      <option value="like-new">Like New</option>
+      <option value="good">Good</option>
+      <option value="fair">Fair</option>
+      <option value="poor">Poor</option>
+    </select>
+    <button class="btn primary" onclick="loadMarketplaceItems()">Search</button>
+  </div>
+</div>
 
-<div class="card"><div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📚</div>
-<div style="margin-top:10px;font-weight:700">Textbook: Algorithms (CLRS)</div>
-<div style="font-size:13px;color:#6b7280">Maya • BMS ECE</div>
-<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-<div style="font-weight:700">₹600</div><button class="btn ghost">Message</button>
-</div></div>
+<!-- Loading indicator -->
+<div id="loadingIndicator" style="text-align:center;padding:40px;display:none">
+  <div style="font-size:18px;color:#6b7280">Loading marketplace items...</div>
+</div>
 
-<div class="card"><div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">🎧</div>
-<div style="margin-top:10px;font-weight:700">Wireless Headphones</div>
-<div style="font-size:13px;color:#6b7280">Anjali • BMS ME</div>
-<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-<div style="font-weight:700">₹1,200</div><button class="btn ghost">Message</button>
-</div></div>
+<!-- Items Grid -->
+<div id="itemsGrid" class="grid-3">
+  <!-- Items will be dynamically loaded here -->
+</div>
+
+<!-- No items message -->
+<div id="noItemsMessage" class="card" style="text-align:center;padding:40px;display:none">
+  <div style="font-size:40px;margin-bottom:16px">📦</div>
+  <div style="font-size:18px;color:#6b7280">No items found</div>
+  <div style="font-size:14px;color:#9ca3af;margin-top:8px">Be the first to post an item!</div>
 </div>
 
 <div id="post" class="card" style="margin-top:20px">
