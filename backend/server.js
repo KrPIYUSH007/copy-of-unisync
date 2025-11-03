@@ -9,6 +9,7 @@ const morgan = require('morgan');
 
 
 const notesRouter = require('./routes/notes');
+const marketplaceRouter = require('./routes/marketplace');
 
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API routes
 app.use('/api/notes', notesRouter);
+app.use('/api/marketplace', marketplaceRouter);
 
 
 // Root
@@ -46,12 +48,21 @@ await mongoose.connect(uri, { connectTimeoutMS: 10000 });
 console.log('Connected to MongoDB');
 
 
+// Only start the server if not running in Vercel serverless environment
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+}
 } catch (err) {
 console.error('Failed to start server:', err);
+if (process.env.NODE_ENV !== 'production') {
 process.exit(1);
 }
 }
+}
 
-
+// Start server connection for local development
 start();
+
+
+// Export for Vercel serverless
+module.exports = app;

@@ -1,17 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const Note = require('../models/Note');
-
-// File upload setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-
-const upload = multer({ storage });
+const { upload } = require('../middleware/upload');
 
 // Create a new note
 router.post('/', upload.single('file'), async (req, res) => {

@@ -75,43 +75,408 @@ background:linear-gradient(90deg,#2563eb,#7c3aed);}
 <div style="font-size:13px;color:#6b7280">Buy and sell items within your campus community.</div></div>
 </div>
 
-<div class="grid-3">
-<div class="card"><div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>
-<div style="margin-top:10px;font-weight:700">Used TI-84 Calculator</div>
-<div style="font-size:13px;color:#6b7280">Karan • BMS CSE</div>
-<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-<div style="font-weight:700">₹1,500</div><button class="btn ghost">Message</button>
-</div></div>
+<!-- Search and Filter Section -->
+<div class="card" style="margin-bottom:20px">
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <input type="text" id="searchInput" placeholder="Search items..." style="flex:1;min-width:200px;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+    <select id="categoryFilter" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="all">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="books">Books</option>
+      <option value="furniture">Furniture</option>
+      <option value="clothing">Clothing</option>
+      <option value="sports">Sports</option>
+      <option value="calculators">Calculators</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="conditionFilter" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="all">All Conditions</option>
+      <option value="new">New</option>
+      <option value="like-new">Like New</option>
+      <option value="good">Good</option>
+      <option value="fair">Fair</option>
+      <option value="poor">Poor</option>
+    </select>
+    <button class="btn primary" onclick="loadMarketplaceItems()">Search</button>
+  </div>
+</div>
 
-<div class="card"><div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📚</div>
-<div style="margin-top:10px;font-weight:700">Textbook: Algorithms (CLRS)</div>
-<div style="font-size:13px;color:#6b7280">Maya • BMS ECE</div>
-<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-<div style="font-weight:700">₹600</div><button class="btn ghost">Message</button>
-</div></div>
+<!-- Loading indicator -->
+<div id="loadingIndicator" style="text-align:center;padding:40px;display:none">
+  <div style="font-size:18px;color:#6b7280">Loading marketplace items...</div>
+</div>
 
-<div class="card"><div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">🎧</div>
-<div style="margin-top:10px;font-weight:700">Wireless Headphones</div>
-<div style="font-size:13px;color:#6b7280">Anjali • BMS ME</div>
-<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-<div style="font-weight:700">₹1,200</div><button class="btn ghost">Message</button>
-</div></div>
+<!-- Items Grid -->
+<div id="itemsGrid" class="grid-3">
+  <!-- Items will be dynamically loaded here -->
+</div>
+
+<!-- No items message -->
+<div id="noItemsMessage" class="card" style="text-align:center;padding:40px;display:none">
+  <div style="font-size:40px;margin-bottom:16px">📦</div>
+  <div style="font-size:18px;color:#6b7280">No items found</div>
+  <div style="font-size:14px;color:#9ca3af;margin-top:8px">Be the first to post an item!</div>
 </div>
 
 <div id="post" class="card" style="margin-top:20px">
 <h3 style="margin:0 0 10px 0">Post a New Item</h3>
-<form onsubmit="event.preventDefault();alert('Item posted successfully (mock)!')">
-<div style="display:flex;flex-wrap:wrap;gap:10px">
-<input required placeholder="Item Name" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
-<input required placeholder="Price (₹)" style="width:120px;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
-<input type="file" style="padding:6px" />
-<button type="submit" class="btn primary">Post</button>
-</div>
+<form id="postItemForm" onsubmit="event.preventDefault();postMarketplaceItem()">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <input id="itemTitle" required placeholder="Item Name *" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+    <input id="itemPrice" type="number" required placeholder="Price (₹) *" min="0" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <select id="itemCategory" required style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="">Select Category *</option>
+      <option value="general">General</option>
+      <option value="electronics">Electronics</option>
+      <option value="books">Books</option>
+      <option value="furniture">Furniture</option>
+      <option value="clothing">Clothing</option>
+      <option value="sports">Sports</option>
+      <option value="calculators">Calculators</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="itemCondition" required style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="">Select Condition *</option>
+      <option value="new">New</option>
+      <option value="like-new">Like New</option>
+      <option value="good">Good</option>
+      <option value="fair">Fair</option>
+      <option value="poor">Poor</option>
+    </select>
+  </div>
+
+  <textarea id="itemDescription" placeholder="Description (optional)" rows="3" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);margin-bottom:12px;resize:vertical"></textarea>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <input id="sellerName" required placeholder="Your Name *" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+    <input id="sellerContact" required placeholder="Your Contact (Email/Phone) *" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="margin-bottom:12px">
+    <input id="sellerInfo" placeholder="Your Info (Department/Year - optional)" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="margin-bottom:12px">
+    <input id="itemLocation" placeholder="Location (Campus Area - optional)" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="margin-bottom:16px">
+    <label for="itemImages" style="display:block;margin-bottom:6px;font-size:14px;color:#4b5563">Images (up to 4, max 5MB each)</label>
+    <input id="itemImages" type="file" multiple accept="image/*" style="width:100%;padding:6px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <button type="submit" id="submitBtn" class="btn primary">Post Item</button>
+    <button type="button" class="btn ghost" onclick="resetPostForm()">Clear</button>
+  </div>
 </form>
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="max-width:500px;width:90%;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="margin:0">Send Message</h3>
+      <button onclick="closeMessageModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#6b7280">×</button>
+    </div>
+    <div id="messageItemInfo" style="margin-bottom:16px;font-size:14px;color:#6b7280"></div>
+    <form onsubmit="event.preventDefault();sendMessage()">
+      <input type="hidden" id="messageItemId" />
+      <div style="margin-bottom:12px">
+        <input id="senderName" required placeholder="Your Name *" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+      </div>
+      <div style="margin-bottom:12px">
+        <input id="senderContact" required placeholder="Your Contact (Email/Phone) *" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+      </div>
+      <div style="margin-bottom:16px">
+        <textarea id="messageText" required placeholder="Your message *" rows="4" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn primary">Send Message</button>
+        <button type="button" class="btn ghost" onclick="closeMessageModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 
 </section>
 </div>
+
+<script>
+// API Configuration
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000/api/marketplace'
+  : '/api/marketplace';
+
+// Initialize marketplace on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadMarketplaceItems();
+
+  // Add enter key support for search
+  document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      loadMarketplaceItems();
+    }
+  });
+});
+
+// Load marketplace items from API
+async function loadMarketplaceItems() {
+  const searchInput = document.getElementById('searchInput').value.trim();
+  const categoryFilter = document.getElementById('categoryFilter').value;
+  const conditionFilter = document.getElementById('conditionFilter').value;
+
+  // Show loading indicator
+  document.getElementById('loadingIndicator').style.display = 'block';
+  document.getElementById('itemsGrid').style.display = 'none';
+  document.getElementById('noItemsMessage').style.display = 'none';
+
+  try {
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (searchInput) params.append('search', searchInput);
+    if (categoryFilter !== 'all') params.append('category', categoryFilter);
+    if (conditionFilter !== 'all') params.append('condition', conditionFilter);
+
+    const response = await fetch(`${API_BASE_URL}/items?${params.toString()}`);
+    const result = await response.json();
+
+    if (result.success) {
+      displayMarketplaceItems(result.data);
+    } else {
+      showError('Failed to load marketplace items');
+    }
+  } catch (error) {
+    console.error('Error loading marketplace items:', error);
+    showError('Failed to connect to marketplace');
+  } finally {
+    document.getElementById('loadingIndicator').style.display = 'none';
+  }
+}
+
+// Display marketplace items in the grid
+function displayMarketplaceItems(items) {
+  const grid = document.getElementById('itemsGrid');
+  const noItemsMessage = document.getElementById('noItemsMessage');
+
+  if (!items || items.length === 0) {
+    grid.style.display = 'none';
+    noItemsMessage.style.display = 'block';
+    return;
+  }
+
+  grid.style.display = 'grid';
+  noItemsMessage.style.display = 'none';
+
+  grid.innerHTML = items.map(item => createItemCard(item)).join('');
+}
+
+// Create HTML for an item card
+function createItemCard(item) {
+  const firstImage = item.images && item.images.length > 0
+    ? item.images[0]
+    : null;
+
+  const imageContent = firstImage
+    ? `<img src="${firstImage}" alt="${item.title}" style="width:100%;height:140px;object-fit:cover;border-radius:10px" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px\\'>📦</div>'" />`
+    : `<div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>`;
+
+  const sellerInfo = item.sellerInfo
+    ? `${item.sellerName} • ${item.sellerInfo}`
+    : item.sellerName;
+
+  return `
+    <div class="card">
+      ${imageContent}
+      <div style="margin-top:10px;font-weight:700">${item.title}</div>
+      <div style="font-size:13px;color:#6b7280">${sellerInfo}</div>
+      ${item.location ? `<div style="font-size:12px;color:#9ca3af">📍 ${item.location}</div>` : ''}
+      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700">₹${item.price}</div>
+        <button class="btn ghost" onclick="openMessageModal('${item._id}', '${item.title}', '${item.sellerName}')">Message</button>
+      </div>
+      ${item.description ? `<div style="margin-top:8px;font-size:13px;color:#4b5563;line-height:1.4">${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</div>` : ''}
+      <div style="margin-top:8px;display:flex;gap:6px;font-size:12px">
+        <span style="background:#f3f4f6;padding:4px 8px;border-radius:6px">${item.category}</span>
+        <span style="background:#f3f4f6;padding:4px 8px;border-radius:6px">${item.condition.replace('-', ' ')}</span>
+      </div>
+    </div>
+  `;
+}
+
+// Post new marketplace item
+async function postMarketplaceItem() {
+  const submitBtn = document.getElementById('submitBtn');
+  const originalText = submitBtn.textContent;
+
+  try {
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Posting...';
+
+    // Get form data
+    const formData = new FormData();
+    formData.append('title', document.getElementById('itemTitle').value.trim());
+    formData.append('price', document.getElementById('itemPrice').value);
+    formData.append('category', document.getElementById('itemCategory').value);
+    formData.append('condition', document.getElementById('itemCondition').value);
+    formData.append('description', document.getElementById('itemDescription').value.trim());
+    formData.append('sellerName', document.getElementById('sellerName').value.trim());
+    formData.append('sellerContact', document.getElementById('sellerContact').value.trim());
+    formData.append('sellerInfo', document.getElementById('sellerInfo').value.trim());
+    formData.append('location', document.getElementById('itemLocation').value.trim());
+
+    // Add images if selected
+    const imageFiles = document.getElementById('itemImages').files;
+    for (let i = 0; i < imageFiles.length; i++) {
+      formData.append('images', imageFiles[i]);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/items`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showSuccess('Item posted successfully!');
+      resetPostForm();
+      loadMarketplaceItems(); // Reload items to show the new one
+      // Scroll to top to see the new item
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showError(result.error || 'Failed to post item');
+    }
+  } catch (error) {
+    console.error('Error posting item:', error);
+    showError('Failed to connect to marketplace');
+  } finally {
+    // Re-enable submit button
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
+}
+
+// Reset post form
+function resetPostForm() {
+  document.getElementById('postItemForm').reset();
+}
+
+// Open message modal
+function openMessageModal(itemId, itemTitle, sellerName) {
+  document.getElementById('messageItemId').value = itemId;
+  document.getElementById('messageItemInfo').textContent = `Message about: ${itemTitle} (Seller: ${sellerName})`;
+  document.getElementById('messageModal').style.display = 'flex';
+  document.getElementById('senderName').focus();
+}
+
+// Close message modal
+function closeMessageModal() {
+  document.getElementById('messageModal').style.display = 'none';
+  document.getElementById('messageItemId').value = '';
+  document.getElementById('senderName').value = '';
+  document.getElementById('senderContact').value = '';
+  document.getElementById('messageText').value = '';
+}
+
+// Send message
+async function sendMessage() {
+  const itemId = document.getElementById('messageItemId').value;
+  const senderName = document.getElementById('senderName').value.trim();
+  const senderContact = document.getElementById('senderContact').value.trim();
+  const messageText = document.getElementById('messageText').value.trim();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/items/${itemId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        senderName,
+        senderContact,
+        message: messageText,
+        isFromSeller: false
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showSuccess('Message sent successfully!');
+      closeMessageModal();
+    } else {
+      showError(result.error || 'Failed to send message');
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+    showError('Failed to connect to marketplace');
+  }
+}
+
+// Show success message
+function showSuccess(message) {
+  showMessage(message, 'success');
+}
+
+// Show error message
+function showError(message) {
+  showMessage(message, 'error');
+}
+
+// Show message (generic)
+function showMessage(message, type) {
+  // Remove any existing message
+  const existingMessage = document.querySelector('.message-toast');
+  if (existingMessage) {
+    existingMessage.remove();
+  }
+
+  // Create message element
+  const messageEl = document.createElement('div');
+  messageEl.className = 'message-toast';
+  messageEl.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    z-index: 2000;
+    max-width: 400px;
+    box-shadow: 0 6px 20px rgba(16,24,40,0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    ${type === 'success'
+      ? 'background: linear-gradient(90deg, #22c55e, #16a34a); color: white;'
+      : 'background: linear-gradient(90deg, #ef4444, #dc2626); color: white;'
+    }
+  `;
+  messageEl.textContent = message;
+
+  document.body.appendChild(messageEl);
+
+  // Animate in
+  setTimeout(() => {
+    messageEl.style.transform = 'translateX(0)';
+  }, 10);
+
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    messageEl.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (messageEl.parentNode) {
+        messageEl.parentNode.removeChild(messageEl);
+      }
+    }, 300);
+  }, 5000);
+}
+</script>
+
 </body>
 </html>
