@@ -9,6 +9,7 @@ const morgan = require('morgan');
 
 
 const notesRouter = require('./routes/notes');
+const marketplaceRouter = require('./routes/marketplace');
 
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API routes
 app.use('/api/notes', notesRouter);
+app.use('/api/marketplace', marketplaceRouter);
 
 
 // Root
