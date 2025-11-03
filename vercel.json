@@ -1,29 +1,18 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "backend/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 10
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/backend/server.js"
+      "source": "/api/(.*)",
+      "destination": "/backend/api/index.js"
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "/backend/uploads/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/uploads/(.*)",
+      "destination": "/backend/uploads/$1"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
+  "functions": {
+    "backend/api/index.js": {
+      "maxDuration": 10
+    }
   }
 }
