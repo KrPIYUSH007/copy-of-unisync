@@ -37,7 +37,7 @@
 ### Step 1: Prepare Repository
 - Ensure all code is pushed to GitHub
 - Verify `vercel.json` configuration is correct
-- Check that `backend/api/index.js` exists
+- Check that `api/index.js` exists in the root directory
 
 ### Step 2: Connect to Vercel
 1. Go to [vercel.com](https://vercel.com)
@@ -103,20 +103,25 @@ curl -X OPTIONS https://your-app.vercel.app/api/marketplace/items
 ## Troubleshooting
 
 ### Common Issues
-1. **MongoDB Connection Error**
+1. **Vercel Configuration Error ("functions property can't be used with builds")**
+   - Fixed by using the simplified `vercel.json` configuration
+   - Uses standard Vercel `api/` directory structure
+   - Only uses `functions` property without `builds`
+
+2. **MongoDB Connection Error**
    - Verify MONGODB_URI is correctly set
    - Check network access (IP whitelist)
    - Ensure database user has correct permissions
 
-2. **File Upload Issues**
+3. **File Upload Issues**
    - Vercel has limitations on file uploads
    - Consider using cloud storage for production
 
-3. **CORS Issues**
+4. **CORS Issues**
    - Verify CORS configuration allows your frontend
    - Check that preflight requests are handled
 
-4. **Build Errors**
+5. **Build Errors**
    - Check all required files are present
    - Verify package.json dependencies
    - Review Vercel build logs
