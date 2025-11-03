@@ -8,7 +8,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 // Import routes
-const marketplaceRouter = require('../routes/marketplace');
+const marketplaceRouter = require('../backend/routes/marketplace');
 
 const app = express();
 
