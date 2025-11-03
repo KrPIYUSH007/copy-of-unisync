@@ -120,14 +120,86 @@ background:linear-gradient(90deg,#2563eb,#7c3aed);}
 
 <div id="post" class="card" style="margin-top:20px">
 <h3 style="margin:0 0 10px 0">Post a New Item</h3>
-<form onsubmit="event.preventDefault();alert('Item posted successfully (mock)!')">
-<div style="display:flex;flex-wrap:wrap;gap:10px">
-<input required placeholder="Item Name" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
-<input required placeholder="Price (₹)" style="width:120px;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
-<input type="file" style="padding:6px" />
-<button type="submit" class="btn primary">Post</button>
-</div>
+<form id="postItemForm" onsubmit="event.preventDefault();postMarketplaceItem()">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <input id="itemTitle" required placeholder="Item Name *" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+    <input id="itemPrice" type="number" required placeholder="Price (₹) *" min="0" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <select id="itemCategory" required style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="">Select Category *</option>
+      <option value="general">General</option>
+      <option value="electronics">Electronics</option>
+      <option value="books">Books</option>
+      <option value="furniture">Furniture</option>
+      <option value="clothing">Clothing</option>
+      <option value="sports">Sports</option>
+      <option value="calculators">Calculators</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="itemCondition" required style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)">
+      <option value="">Select Condition *</option>
+      <option value="new">New</option>
+      <option value="like-new">Like New</option>
+      <option value="good">Good</option>
+      <option value="fair">Fair</option>
+      <option value="poor">Poor</option>
+    </select>
+  </div>
+
+  <textarea id="itemDescription" placeholder="Description (optional)" rows="3" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);margin-bottom:12px;resize:vertical"></textarea>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <input id="sellerName" required placeholder="Your Name *" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+    <input id="sellerContact" required placeholder="Your Contact (Email/Phone) *" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="margin-bottom:12px">
+    <input id="sellerInfo" placeholder="Your Info (Department/Year - optional)" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="margin-bottom:12px">
+    <input id="itemLocation" placeholder="Location (Campus Area - optional)" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="margin-bottom:16px">
+    <label for="itemImages" style="display:block;margin-bottom:6px;font-size:14px;color:#4b5563">Images (up to 4, max 5MB each)</label>
+    <input id="itemImages" type="file" multiple accept="image/*" style="width:100%;padding:6px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <button type="submit" id="submitBtn" class="btn primary">Post Item</button>
+    <button type="button" class="btn ghost" onclick="resetPostForm()">Clear</button>
+  </div>
 </form>
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="max-width:500px;width:90%;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="margin:0">Send Message</h3>
+      <button onclick="closeMessageModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#6b7280">×</button>
+    </div>
+    <div id="messageItemInfo" style="margin-bottom:16px;font-size:14px;color:#6b7280"></div>
+    <form onsubmit="event.preventDefault();sendMessage()">
+      <input type="hidden" id="messageItemId" />
+      <div style="margin-bottom:12px">
+        <input id="senderName" required placeholder="Your Name *" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+      </div>
+      <div style="margin-bottom:12px">
+        <input id="senderContact" required placeholder="Your Contact (Email/Phone) *" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+      </div>
+      <div style="margin-bottom:16px">
+        <textarea id="messageText" required placeholder="Your message *" rows="4" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn primary">Send Message</button>
+        <button type="button" class="btn ghost" onclick="closeMessageModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 
