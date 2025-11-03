@@ -47,7 +47,26 @@
 5. Configure settings:
 
 ### Step 3: Environment Variables
-In Vercel dashboard, add these environment variables:
+
+**Step-by-Step Setup:**
+1. Go to [vercel.com](https://vercel.com) and access your dashboard
+2. Click on your `copy-of-unisync` project
+3. Navigate to **Settings** → **Environment Variables**
+4. Click **"Add New"** and add each variable:
+
+**Add MONGODB_URI:**
+- Name: `MONGODB_URI`
+- Value: Your MongoDB connection string
+- Environments: Production, Preview, Development
+- Click Save
+
+**Add NODE_ENV:**
+- Name: `NODE_ENV`
+- Value: `production`
+- Environments: Production
+- Click Save
+
+**Required Variables:**
 ```
 MONGODB_URI=mongodb+srv://your_username:your_password@cluster.mongodb.net/unisync
 NODE_ENV=production
