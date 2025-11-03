@@ -37,7 +37,7 @@
 ### Step 1: Prepare Repository
 - Ensure all code is pushed to GitHub
 - Verify `vercel.json` configuration is correct
-- Check that `backend/api/index.js` exists
+- Check that `api/index.js` exists in the root directory
 
 ### Step 2: Connect to Vercel
 1. Go to [vercel.com](https://vercel.com)
