@@ -205,5 +205,278 @@ background:linear-gradient(90deg,#2563eb,#7c3aed);}
 
 </section>
 </div>
+
+<script>
+// API Configuration
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000/api/marketplace'
+  : '/api/marketplace';
+
+// Initialize marketplace on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadMarketplaceItems();
+
+  // Add enter key support for search
+  document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      loadMarketplaceItems();
+    }
+  });
+});
+
+// Load marketplace items from API
+async function loadMarketplaceItems() {
+  const searchInput = document.getElementById('searchInput').value.trim();
+  const categoryFilter = document.getElementById('categoryFilter').value;
+  const conditionFilter = document.getElementById('conditionFilter').value;
+
+  // Show loading indicator
+  document.getElementById('loadingIndicator').style.display = 'block';
+  document.getElementById('itemsGrid').style.display = 'none';
+  document.getElementById('noItemsMessage').style.display = 'none';
+
+  try {
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (searchInput) params.append('search', searchInput);
+    if (categoryFilter !== 'all') params.append('category', categoryFilter);
+    if (conditionFilter !== 'all') params.append('condition', conditionFilter);
+
+    const response = await fetch(`${API_BASE_URL}/items?${params.toString()}`);
+    const result = await response.json();
+
+    if (result.success) {
+      displayMarketplaceItems(result.data);
+    } else {
+      showError('Failed to load marketplace items');
+    }
+  } catch (error) {
+    console.error('Error loading marketplace items:', error);
+    showError('Failed to connect to marketplace');
+  } finally {
+    document.getElementById('loadingIndicator').style.display = 'none';
+  }
+}
+
+// Display marketplace items in the grid
+function displayMarketplaceItems(items) {
+  const grid = document.getElementById('itemsGrid');
+  const noItemsMessage = document.getElementById('noItemsMessage');
+
+  if (!items || items.length === 0) {
+    grid.style.display = 'none';
+    noItemsMessage.style.display = 'block';
+    return;
+  }
+
+  grid.style.display = 'grid';
+  noItemsMessage.style.display = 'none';
+
+  grid.innerHTML = items.map(item => createItemCard(item)).join('');
+}
+
+// Create HTML for an item card
+function createItemCard(item) {
+  const firstImage = item.images && item.images.length > 0
+    ? item.images[0]
+    : null;
+
+  const imageContent = firstImage
+    ? `<img src="${firstImage}" alt="${item.title}" style="width:100%;height:140px;object-fit:cover;border-radius:10px" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px\\'>📦</div>'" />`
+    : `<div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>`;
+
+  const sellerInfo = item.sellerInfo
+    ? `${item.sellerName} • ${item.sellerInfo}`
+    : item.sellerName;
+
+  return `
+    <div class="card">
+      ${imageContent}
+      <div style="margin-top:10px;font-weight:700">${item.title}</div>
+      <div style="font-size:13px;color:#6b7280">${sellerInfo}</div>
+      ${item.location ? `<div style="font-size:12px;color:#9ca3af">📍 ${item.location}</div>` : ''}
+      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700">₹${item.price}</div>
+        <button class="btn ghost" onclick="openMessageModal('${item._id}', '${item.title}', '${item.sellerName}')">Message</button>
+      </div>
+      ${item.description ? `<div style="margin-top:8px;font-size:13px;color:#4b5563;line-height:1.4">${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</div>` : ''}
+      <div style="margin-top:8px;display:flex;gap:6px;font-size:12px">
+        <span style="background:#f3f4f6;padding:4px 8px;border-radius:6px">${item.category}</span>
+        <span style="background:#f3f4f6;padding:4px 8px;border-radius:6px">${item.condition.replace('-', ' ')}</span>
+      </div>
+    </div>
+  `;
+}
+
+// Post new marketplace item
+async function postMarketplaceItem() {
+  const submitBtn = document.getElementById('submitBtn');
+  const originalText = submitBtn.textContent;
+
+  try {
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Posting...';
+
+    // Get form data
+    const formData = new FormData();
+    formData.append('title', document.getElementById('itemTitle').value.trim());
+    formData.append('price', document.getElementById('itemPrice').value);
+    formData.append('category', document.getElementById('itemCategory').value);
+    formData.append('condition', document.getElementById('itemCondition').value);
+    formData.append('description', document.getElementById('itemDescription').value.trim());
+    formData.append('sellerName', document.getElementById('sellerName').value.trim());
+    formData.append('sellerContact', document.getElementById('sellerContact').value.trim());
+    formData.append('sellerInfo', document.getElementById('sellerInfo').value.trim());
+    formData.append('location', document.getElementById('itemLocation').value.trim());
+
+    // Add images if selected
+    const imageFiles = document.getElementById('itemImages').files;
+    for (let i = 0; i < imageFiles.length; i++) {
+      formData.append('images', imageFiles[i]);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/items`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showSuccess('Item posted successfully!');
+      resetPostForm();
+      loadMarketplaceItems(); // Reload items to show the new one
+      // Scroll to top to see the new item
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showError(result.error || 'Failed to post item');
+    }
+  } catch (error) {
+    console.error('Error posting item:', error);
+    showError('Failed to connect to marketplace');
+  } finally {
+    // Re-enable submit button
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
+}
+
+// Reset post form
+function resetPostForm() {
+  document.getElementById('postItemForm').reset();
+}
+
+// Open message modal
+function openMessageModal(itemId, itemTitle, sellerName) {
+  document.getElementById('messageItemId').value = itemId;
+  document.getElementById('messageItemInfo').textContent = `Message about: ${itemTitle} (Seller: ${sellerName})`;
+  document.getElementById('messageModal').style.display = 'flex';
+  document.getElementById('senderName').focus();
+}
+
+// Close message modal
+function closeMessageModal() {
+  document.getElementById('messageModal').style.display = 'none';
+  document.getElementById('messageItemId').value = '';
+  document.getElementById('senderName').value = '';
+  document.getElementById('senderContact').value = '';
+  document.getElementById('messageText').value = '';
+}
+
+// Send message
+async function sendMessage() {
+  const itemId = document.getElementById('messageItemId').value;
+  const senderName = document.getElementById('senderName').value.trim();
+  const senderContact = document.getElementById('senderContact').value.trim();
+  const messageText = document.getElementById('messageText').value.trim();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/items/${itemId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        senderName,
+        senderContact,
+        message: messageText,
+        isFromSeller: false
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showSuccess('Message sent successfully!');
+      closeMessageModal();
+    } else {
+      showError(result.error || 'Failed to send message');
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+    showError('Failed to connect to marketplace');
+  }
+}
+
+// Show success message
+function showSuccess(message) {
+  showMessage(message, 'success');
+}
+
+// Show error message
+function showError(message) {
+  showMessage(message, 'error');
+}
+
+// Show message (generic)
+function showMessage(message, type) {
+  // Remove any existing message
+  const existingMessage = document.querySelector('.message-toast');
+  if (existingMessage) {
+    existingMessage.remove();
+  }
+
+  // Create message element
+  const messageEl = document.createElement('div');
+  messageEl.className = 'message-toast';
+  messageEl.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    z-index: 2000;
+    max-width: 400px;
+    box-shadow: 0 6px 20px rgba(16,24,40,0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    ${type === 'success'
+      ? 'background: linear-gradient(90deg, #22c55e, #16a34a); color: white;'
+      : 'background: linear-gradient(90deg, #ef4444, #dc2626); color: white;'
+    }
+  `;
+  messageEl.textContent = message;
+
+  document.body.appendChild(messageEl);
+
+  // Animate in
+  setTimeout(() => {
+    messageEl.style.transform = 'translateX(0)';
+  }, 10);
+
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    messageEl.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (messageEl.parentNode) {
+        messageEl.parentNode.removeChild(messageEl);
+      }
+    }, 300);
+  }, 5000);
+}
+</script>
+
 </body>
 </html>
