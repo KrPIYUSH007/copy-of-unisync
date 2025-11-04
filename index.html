@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UniSync - College Platform</title>
 
-  <!-- React + Babel + Tailwind --> 
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <!-- React + Babel + Tailwind --><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Font for new logo --><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -17,12 +20,18 @@
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
       margin: 0;
       padding: 0;
-      background-image: url('./NEUMORPHIC_CIRCLES_BACKGROUND.jpg');
+      background-image: url('https://placehold.co/1920x1080/2a2a2a/4a4a4a?text=NEUMORPHIC_CIRCLES_BACKGROUND.jpg');
+      /* Fallback for the missing local image */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       background-attachment: fixed;
       width: 100%;
+    }
+
+    /* Custom class for the new logo font */
+    .font-logo {
+      font-family: 'Dancing Script', cursive;
     }
 
     @keyframes gradientMove {
@@ -116,10 +125,11 @@
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center h-20">
                 <a href="#" className="flex items-center gap-3">
-                  <div className="w-14 h-14 bg-gradient-to-tr from-indigo-500 via-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shadow-[4px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-1 transition-transform">
+                  {/* --- ORANGE GRADIENT CSS LOGO --- */}
+                  <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-amber-400 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shadow-[4px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-1 transition-transform">
                     U
                   </div>
-                  <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 drop-shadow-[0_0_6px_rgba(138,43,226,0.4)]">
+                  <h1 className="text-5xl font-bold text-white font-logo drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
                     UniSync
                   </h1>
                 </a>
@@ -190,4 +200,5 @@
 
 </body>
 </html>
+
 
