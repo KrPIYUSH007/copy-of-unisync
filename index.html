@@ -78,7 +78,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useRef, useEffect } = React;
+    const { useState } = React;
 
     const FeatureCard = ({ id, label, icon, url, onClick }) => (
       <a
@@ -99,12 +99,8 @@
     );
 
     const UniSync = () => {
-      // --- 1. HOOKS ---
       const [clickedId, setClickedId] = useState(null);
-      const [showGame, setShowGame] = useState(false);
-      const gameSectionRef = useRef(null);
 
-      // --- 2. DATA ---
       const features = [
         { id: 'notes', label: 'Notes Sharing', icon: '📝', url: 'notes.html' },
         { id: 'groups', label: 'Study Groups', icon: '👥', url: 'groups.html' },
@@ -115,7 +111,6 @@
         { id: 'dashboard', label: 'Personal Dashboard', icon: '📊', url: 'dashboard.html' }
       ];
 
-      // --- 3. HANDLERS ---
       const handleCardClick = (id, url) => {
         setClickedId(id);
         setTimeout(() => {
@@ -123,33 +118,6 @@
         }, 300);
       };
 
-      // --- 4. EFFECTS (FOR SCROLL ANIMATION) ---
-      // --- 4. EFFECTS (FOR SCROLL ANIMATION) ---
-      useEffect(() => {
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            // This line will be true when scrolling in,
-            // and false when scrolling out.
-            setShowGame(entry.isIntersecting); 
-          },
-          {
-            threshold: 0.1 // Trigger when 10% of the element is visible
-          }
-        );
-
-        if (gameSectionRef.current) {
-          observer.observe(gameSectionRef.current);
-        }
-
-        // Cleanup on component unmount
-        return () => {
-          if (gameSectionRef.current) {
-            observer.unobserve(gameSectionRef.current);
-          }
-        };
-      }, []); // The empty array ensures this runs only once
-
-      // --- 5. RENDER ---
       return (
         <div className="min-h-screen bg-black/40 backdrop-blur-sm">
           {/* Header */}
@@ -186,15 +154,15 @@
               Hello, Piyush! Choose your adventure and connect with your college community.
             </p>
 
-            {/* Features Grid (Cards) */}
+            {/* Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map(feature => (
                 <FeatureCard key={feature.id} {...feature} onClick={handleCardClick} />
               ))}
             </div>
 
-            {/* Embedded Slow Roads (with scroll animation) */}
-            <div className="mt-20 text-center" ref={gameSectionRef}>
+            {/* Embedded Slow Roads */}
+            <div className="mt-20 text-center">
               <h2 className="text-3xl font-bold mb-4 text-white">
                 Take a Break !!! Play Slow Roads 🚗
               </h2>
@@ -202,14 +170,8 @@
                 Relax and drive through stunning landscapes, right here in your UniSync dashboard.
               </p>
 
-              <div 
-                className={`
-                  w-full rounded-2xl shadow-2xl border-4 border-purple-300 
-                  transform-origin-top overflow-hidden
-                  transition-all duration-500 ease-in-out
-                  ${showGame ? 'max-h-[620px] opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95'}
-                `}
-              >
+              <div className="w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-300">
+                
                 <iframe
                   src="https://slowroads.io/"
                   width="100%"
@@ -226,8 +188,15 @@
     };
 
     ReactDOM.render(<UniSync />, document.getElementById("root"));
+  </script>
+  <script>
+  // Prevent iframe auto-focus scroll on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0); // small delay ensures iframe has loaded
+  });
 </script>
-<script type="module" src="/src/main.jsx"></script>
 
 </body>
 </html>
